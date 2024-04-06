@@ -1,10 +1,10 @@
 <?php
 
-use Modes\Framework\Http\Response;
+use App\Controllers\HomeController;
+use App\Controllers\TaskController;
 use Modes\Framework\Routing\Route;
 
 return [
-   Route::get(uri: '/',  handler: function () {
-       return new Response(content: '<h1>Привет мир! Я Modes фреймворк! А ты кто?</h1>');
-   })
+    Route::get(uri: '/', handler: [HomeController::class, 'index']),
+    Route::get(uri: '/tasks/{id:\d+}', handler: [TaskController::class, 'index']),
 ];

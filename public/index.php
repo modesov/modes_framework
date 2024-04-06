@@ -4,7 +4,9 @@ require BASE_PATH . '/vendor/autoload.php';
 
 use Modes\Framework\Http\Kernel;
 use Modes\Framework\Http\Request;
+use Modes\Framework\Routing\Router;
 
 $request = Request::createFromGlobals();
-$kernel = new Kernel();
+$router = new Router();
+$kernel = new Kernel($router);
 $kernel->handle($request)->send();
