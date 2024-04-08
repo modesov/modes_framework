@@ -1,10 +1,13 @@
 <?php
 
 use App\Controllers\HomeController;
-use App\Controllers\TaskController;
+use Modes\Framework\Http\Response;
 use Modes\Framework\Routing\Route;
 
 return [
     Route::get(uri: '/', handler: [HomeController::class, 'index']),
-    Route::get(uri: '/tasks/{id:\d+}', handler: [TaskController::class, 'index']),
+    Route::get(uri: '/docs/{name}', handler: function (string $name = 'добрый человек') {
+        $name = urldecode($name);
+        return new Response(content: "Привет, {$name}!");
+    }),
 ];

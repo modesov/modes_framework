@@ -8,7 +8,7 @@ use Modes\Framework\Http\Responses\NotAllowedMethodResponse;
 use Modes\Framework\Http\Responses\NotFountResponse;
 use Modes\Framework\Routing\RouterInterface;
 
-class Kernel
+class  Kernel
 {
     public function __construct(
         private readonly RouterInterface $router

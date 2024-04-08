@@ -6,7 +6,7 @@ use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
 use Modes\Framework\Http\Exceptions\NotFoundException;
 use Modes\Framework\Http\Request;
 
-interface RouterInterface
+interface  RouterInterface
 {
     /**
      * @throws MethodNotAllowedException
