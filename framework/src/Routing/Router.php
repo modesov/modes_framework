@@ -28,6 +28,10 @@ class Router implements RouterInterface
             $handler = [$controller, $method];
         }
 
+        if (is_string($handler)) {
+            $handler = $container->get($handler);
+        }
+
         return [$handler, $vars];
     }
 
