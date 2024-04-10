@@ -12,7 +12,8 @@
     ],
     "require": {
         "php": "^8.2",
-        "msdenimod/modes": "dev-main"
+        "msdenimod/modes": "dev-main",
+        "symfony/dotenv": "^7.0"
     },
     "require-dev": {
         "symfony/var-dumper": "^6.4"

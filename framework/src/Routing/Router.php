@@ -6,7 +6,7 @@ use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use League\Container\Container;
 use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
-use Modes\Framework\Http\Exceptions\NotFoundException;
+use Modes\Framework\Http\Exceptions\NotFoundRouteException;
 use Modes\Framework\Http\Request;
 use function FastRoute\simpleDispatcher;
 
@@ -16,7 +16,7 @@ class Router implements RouterInterface
 
     /**
      * @throws MethodNotAllowedException
-     * @throws NotFoundException
+     * @throws NotFoundRouteException
      */
     public function dispatch(Request $request, Container $container): array
     {
@@ -42,7 +42,7 @@ class Router implements RouterInterface
 
     /**
      * @throws MethodNotAllowedException
-     * @throws NotFoundException
+     * @throws NotFoundRouteException
      */
     private function extractRouteInfo(Request $request): array
     {
@@ -61,7 +61,7 @@ class Router implements RouterInterface
             case Dispatcher::METHOD_NOT_ALLOWED:
                 throw new MethodNotAllowedException(message: 'Method not allowed', allowedMethods: $routeInfo[1]);
             default:
-                throw new NotFoundException(message: "404 not found");
+                throw new NotFoundRouteException(message: "404 not found");
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Modes\Framework\Http\Exceptions;
 
-class NotFoundException extends HttpException
+class NotFoundRouteException extends HttpException
 {
 
 }

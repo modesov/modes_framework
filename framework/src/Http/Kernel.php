@@ -3,19 +3,28 @@
 namespace Modes\Framework\Http;
 
 use League\Container\Container;
+use League\Container\Exception\NotFoundException;
 use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
-use Modes\Framework\Http\Exceptions\NotFoundException;
+use Modes\Framework\Http\Exceptions\NotFoundRouteException;
 use Modes\Framework\Http\Responses\NotAllowedMethodResponse;
 use Modes\Framework\Http\Responses\NotFountResponse;
 use Modes\Framework\Routing\RouterInterface;
 
 class  Kernel
 {
+    private string $appEnv;
+
     public function __construct(
         private RouterInterface $router,
         private Container $container
     )
     {
+        try {
+            $appEnv = $this->container->get('APP_ENV');
+        } catch (NotFoundException) {
+            $appEnv = 'local';
+        }
+        $this->appEnv = $appEnv;
     }
 
     public function handle(Request $request): Response
@@ -30,7 +39,12 @@ class  Kernel
 
     private function createExceptionResponse(\Exception $exception): Response
     {
-        if ($exception instanceof NotFoundException) {
+        if (in_array($this->appEnv, ['local', 'tests'])) {
+            // TODO
+            throw $exception;
+        }
+
+        if ($exception instanceof NotFoundRouteException) {
             return call_user_func_array(
                 [new NotFountResponse, 'index'],
                 ['message' => $exception->getMessage()]
