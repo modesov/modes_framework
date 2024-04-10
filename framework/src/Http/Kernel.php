@@ -23,12 +23,21 @@ class  Kernel
         try {
             [$handler, $vars] = $this->router->dispatch($request, $this->container);
             return call_user_func_array($handler, $vars);
-        } catch (NotFoundException $exception) {
+        } catch (\Exception $exception) {
+            return $this->createExceptionResponse($exception);
+        }
+    }
+
+    private function createExceptionResponse(\Exception $exception): Response
+    {
+        if ($exception instanceof NotFoundException) {
             return call_user_func_array(
                 [new NotFountResponse, 'index'],
                 ['message' => $exception->getMessage()]
             );
-        } catch (MethodNotAllowedException $exception) {
+        }
+
+        if ($exception instanceof MethodNotAllowedException) {
             return call_user_func_array(
                 [new NotAllowedMethodResponse, 'index'],
                 [
@@ -36,8 +45,10 @@ class  Kernel
                     'allowedMethods' => $exception->allowedMethods
                 ]
             );
-        } catch (\Throwable $exception) {
-            return new Response(content: $exception->getMessage(), statusCode: 500);
         }
+
+        return new Response(content: $exception->getMessage(), statusCode: 500);
     }
+
+
 }
