@@ -2,6 +2,7 @@
 
 namespace Modes\Framework\Routing;
 
+use League\Container\Container;
 use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
 use Modes\Framework\Http\Exceptions\NotFoundException;
 use Modes\Framework\Http\Request;
@@ -12,7 +13,7 @@ interface  RouterInterface
      * @throws MethodNotAllowedException
      * @throws NotFoundException
      */
-    public function dispatch(Request $request): array;
+    public function dispatch(Request $request, Container $container): array;
 
     public function registerRoutes(array $routes): void;
 }
