@@ -13,4 +13,6 @@ interface  RouterInterface
      * @throws NotFoundException
      */
     public function dispatch(Request $request): array;
+
+    public function registerRoutes(array $routes): void;
 }
