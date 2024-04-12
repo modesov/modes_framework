@@ -2,13 +2,13 @@
 
 namespace Modes\Framework\Http;
 
-use League\Container\Container;
 use League\Container\Exception\NotFoundException;
 use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
 use Modes\Framework\Http\Exceptions\NotFoundRouteException;
 use Modes\Framework\Http\Responses\NotAllowedMethodResponse;
 use Modes\Framework\Http\Responses\NotFountResponse;
 use Modes\Framework\Routing\RouterInterface;
+use Psr\Container\ContainerInterface;
 
 class  Kernel
 {
@@ -16,7 +16,7 @@ class  Kernel
 
     public function __construct(
         private RouterInterface $router,
-        private Container $container
+        private ContainerInterface $container
     )
     {
         try {

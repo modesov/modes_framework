@@ -2,12 +2,20 @@
 
 namespace App\Controllers;
 
+use App\Services\TelegramBotService;
+use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Http\Response;
 
-class HomeController
+class HomeController extends AbstractController
 {
-    public function index():Response
+    public function __construct(
+        private TelegramBotService $telegramBotService
+    )
     {
-        return new Response(content: '<h1>Описание Modes framework</h1>');
+    }
+
+    public function index(): Response
+    {
+        return $this->render('home', ['url' => $this->telegramBotService->getUrlToBotFrameworkDocs()]);
     }
 }
