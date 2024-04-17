@@ -1,10 +1,12 @@
 <?php
 
+use Doctrine\DBAL\Connection;
 use League\Container\Argument\Literal\ArrayArgument;
 use League\Container\Argument\Literal\StringArgument;
 use League\Container\Container;
 use League\Container\ReflectionContainer;
 use Modes\Framework\Controller\AbstractController;
+use Modes\Framework\Dbal\ConnectionFactory;
 use Modes\Framework\Http\Kernel;
 use Modes\Framework\Routing\Router;
 use Modes\Framework\Routing\RouterInterface;
@@ -19,6 +21,8 @@ $dotenv->load(BASE_PATH . '/.env');
 $routes = include BASE_PATH . '/routes/web.php';
 $appEnv = $_ENV['APP_ENV'] ?? 'local';
 $viewsPath = BASE_PATH . '/views';
+$databaseUrl = $_ENV['DB_URL'] ?? 'pdo-sqlite:///db.sqlite';
+
 
 // Application services
 $container = new Container();
@@ -42,5 +46,11 @@ $container->addShared(id: 'twig', concrete: Environment::class)
 
 $container->inflector(type: AbstractController::class)
     ->invokeMethod(name: 'setContainer', args: [$container]);
+
+$container->add(id: ConnectionFactory::class)->addArgument(new StringArgument($databaseUrl));
+
+$container->addShared(id: Connection::class, concrete: function() use ($container): Connection {
+    return $container->get(ConnectionFactory::class)->create();
+});
 
 return $container;

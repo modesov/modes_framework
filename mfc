@@ -1,0 +1,17 @@
+#!/usr/bin/env php
+<?php
+
+use League\Container\Container;
+use Modes\Framework\Console\Kernel;
+
+define('BASE_PATH', dirname(__FILE__));
+require BASE_PATH . '/vendor/autoload.php';
+
+/** @var Container $container */
+$container = include BASE_PATH . '/config/services_cli.php';
+
+$kernel = $container->get(Kernel::class);
+
+$status = $kernel->handler();
+
+exit($status);
