@@ -19,7 +19,8 @@ class ConnectionFactory
     {
         return DriverManager::getConnection([
             'url' => $this->databaseUrl,
-            'driver' => 'pdo_sqlite'
+            'driver' => 'pdo_sqlite',
+            'path' => 'db.sqlite',
         ]);
     }
 

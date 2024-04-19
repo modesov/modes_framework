@@ -5,6 +5,7 @@ use League\Container\Argument\Literal\StringArgument;
 use League\Container\Container;
 use League\Container\ReflectionContainer;
 use Modes\Framework\Console\Application;
+use Modes\Framework\Console\Commands\MigrationCommand;
 use Modes\Framework\Dbal\ConnectionFactory;
 use Modes\Framework\Console\Kernel;
 use Modes\Framework\Routing\RouterInterface;
@@ -31,5 +32,9 @@ $container->addShared(id: Connection::class, concrete: function() use ($containe
 });
 $container->add(id: Application::class)->addArgument($container);
 $container->add(id: Kernel::class)->addArguments(args: [$container, Application::class]);
+
+$container->add(id: 'mc:migrate', concrete: MigrationCommand::class)
+    ->addArgument(arg: Connection::class)
+    ->addArgument(arg: new StringArgument(BASE_PATH . '/database/migrations'));
 
 return $container;
