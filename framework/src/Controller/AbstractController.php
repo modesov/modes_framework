@@ -2,6 +2,7 @@
 
 namespace Modes\Framework\Controller;
 
+use Modes\Framework\Http\Request;
 use Modes\Framework\Http\Response;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -14,12 +15,17 @@ use Twig\Error\SyntaxError;
 abstract class AbstractController
 {
     protected ?ContainerInterface $container = null;
+    protected Request $request;
 
     public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
 
+    public function setRequest(Request $request): void
+    {
+        $this->request = $request;
+    }
 
     public function render(string $view, array $params = [], Response $response = null): Response
     {

@@ -25,4 +25,14 @@ class Response
     {
         $this->content = $content;
     }
+
+    public function getHeader(string $key): ?string
+    {
+        return $this->headers[$key] ?? null;
+    }
+
+    public function getStatusCode(): int
+    {
+        return $this->statusCode;
+    }
 }

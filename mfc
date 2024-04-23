@@ -8,7 +8,7 @@ define('BASE_PATH', dirname(__FILE__));
 require BASE_PATH . '/vendor/autoload.php';
 
 /** @var Container $container */
-$container = include BASE_PATH . '/config/services_cli.php';
+$container = include BASE_PATH . '/config/services.php';
 
 $kernel = $container->get(Kernel::class);
 

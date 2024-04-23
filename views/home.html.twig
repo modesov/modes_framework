@@ -6,7 +6,15 @@ Modes framework
 
 {% block main %}
     <h1>Описание Modes framework</h1>
+    {{ user.name }}
     <p>Про УТП фреймворка</p>
 
+    <form method="post" action="/users">
+        <input type="text" name="name" placeholder="Имя">
+        <input type="email" name="email" placeholder="email">
+        <input type="password" name="password" placeholder="Пароль">
+        <button>Зарегистрироваться</button>
+    </form>
+    <br>
     <a href="{{ url }}" target="_blank">Телеграм бот помощник в освоении Фреймворка</a>
 {% endblock %}

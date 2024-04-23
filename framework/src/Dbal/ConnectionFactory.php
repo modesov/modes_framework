@@ -9,7 +9,7 @@ class ConnectionFactory
 {
 
     public function __construct(
-        private readonly string $databaseUrl
+        private readonly array $databaseConfiguration
     )
     {
     }
@@ -17,11 +17,6 @@ class ConnectionFactory
 
     public function create(): Connection
     {
-        return DriverManager::getConnection([
-            'url' => $this->databaseUrl,
-            'driver' => 'pdo_sqlite',
-            'path' => 'db.sqlite',
-        ]);
+        return DriverManager::getConnection($this->databaseConfiguration);
     }
-
 }

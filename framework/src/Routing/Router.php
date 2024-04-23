@@ -5,6 +5,7 @@ namespace Modes\Framework\Routing;
 use FastRoute\Dispatcher;
 use FastRoute\RouteCollector;
 use League\Container\Container;
+use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
 use Modes\Framework\Http\Exceptions\NotFoundRouteException;
 use Modes\Framework\Http\Request;
@@ -25,11 +26,13 @@ class Router implements RouterInterface
         if (is_array($handler)) {
             [$controllerId, $method] = $handler;
             $controller = $container->get($controllerId);
+            $this->setRequest($controller, $request);
             $handler = [$controller, $method];
         }
 
         if (is_string($handler)) {
             $handler = $container->get($handler);
+            $this->setRequest($handler, $request);
         }
 
         return [$handler, $vars];
@@ -62,6 +65,13 @@ class Router implements RouterInterface
                 throw new MethodNotAllowedException(message: 'Method not allowed', allowedMethods: $routeInfo[1]);
             default:
                 throw new NotFoundRouteException(message: "404 not found");
+        }
+    }
+
+    private function setRequest(object $object, Request $request): void
+    {
+        if (is_subclass_of($object, AbstractController::class)) {
+            $object->setRequest($request);
         }
     }
 }
