@@ -11,8 +11,15 @@ use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Dbal\ConnectionFactory;
 use Modes\Framework\Http\Kernel;
 use Modes\Framework\Console\Kernel as ConsoleKernel;
+use Modes\Framework\Http\Middlewares\RequestHandler;
+use Modes\Framework\Http\Middlewares\RequestHandlerInterface;
+use Modes\Framework\Http\Middlewares\RouterDispatch;
 use Modes\Framework\Routing\Router;
 use Modes\Framework\Routing\RouterInterface;
+use Modes\Framework\Session\Session;
+use Modes\Framework\Session\SessionInterface;
+use Modes\Framework\Template\TwigFactory;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\Dotenv\Dotenv;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -39,7 +46,7 @@ $container->delegate(new ReflectionContainer(cacheResolutions: true));
 $container->add(id: 'APP_ENV', concrete: new StringArgument($appEnv));
 $container->add(id: ConnectionFactory::class)->addArgument(new ArrayArgument($databaseConfiguration));
 
-$container->addShared(id: Connection::class, concrete: function() use ($container): Connection {
+$container->addShared(id: Connection::class, concrete: function () use ($container): Connection {
     return $container->get(ConnectionFactory::class)->create();
 });
 
@@ -50,17 +57,29 @@ if ($sapi !== 'cli') {
     $container->extend(id: RouterInterface::class)
         ->addMethodCall(method: 'registerRoutes', args: [new ArrayArgument($routes)]);
 
-    $container->add(id: Kernel::class)->addArguments(args: [RouterInterface::class, $container]);
+    $container->add(id: RequestHandlerInterface::class, concrete: RequestHandler::class)
+        ->addArgument($container);
+
+    $container->add(id: Kernel::class)->addArguments(args: [RouterInterface::class, $container, RequestHandlerInterface::class]);
+
+    $container->addShared(SessionInterface::class, Session::class);
 
     $viewsPath = BASE_PATH . '/views';
-    $container->addShared(id: 'twig-loader', concrete: FilesystemLoader::class)
-        ->addArgument(new StringArgument($viewsPath));
+    $container->add('twig-factory', TwigFactory::class)
+        ->addArguments([new StringArgument($viewsPath), SessionInterface::class]);
 
-    $container->addShared(id: 'twig', concrete: Environment::class)
-        ->addArgument(arg: 'twig-loader');
+    $container->addShared('twig', function () use ($container) {
+        return $container->get(id: 'twig-factory')->create();
+    });
 
     $container->inflector(type: AbstractController::class)
         ->invokeMethod(name: 'setContainer', args: [$container]);
+
+    $container->add(id: RouterDispatch::class)
+        ->addArguments(args: [
+            RouterInterface::class,
+            $container
+        ]);
 } else {
     // Console
     $container->add(id: 'framework-command-namespace', concrete: new StringArgument('Modes\\Framework\\Console\\Commands\\'));

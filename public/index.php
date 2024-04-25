@@ -7,7 +7,13 @@ use Modes\Framework\Http\Request;
 
 /** @var League\Container\Container $container */
 $container = require BASE_PATH . '/config/services.php';
+
 $request = Request::createFromGlobals();
 
 $kernel = $container->get(Kernel::class);
-$kernel->handle($request)->send();
+
+$response = $kernel->handle($request);
+
+$response->send();
+
+$kernel->terminate($request, $response);

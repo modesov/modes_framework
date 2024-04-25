@@ -11,7 +11,7 @@ use Modes\Framework\Http\Response;
 class AddUserController extends AbstractController
 {
     public function __construct(
-        private UserService $userService,
+        private UserService $userService
     )
     {
     }
@@ -26,6 +26,8 @@ class AddUserController extends AbstractController
         );
 
         $user = $this->userService->save($user);
+
+        $this->request->getSession()->setFlash('success', 'Пользователь успешно добавлен!');
 
         return new RedirectResponse("/users/{$user->getId()}");
     }

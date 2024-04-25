@@ -2,8 +2,12 @@
 
 namespace Modes\Framework\Http;
 
+use Modes\Framework\Session\SessionInterface;
+
 class Request
 {
+    private SessionInterface $session;
+
     public function __construct(
         private readonly array $qetParams,
         private readonly array $postData,
@@ -12,6 +16,16 @@ class Request
         private readonly array $server
     )
     {
+    }
+
+    public function setSession(SessionInterface $session)
+    {
+        $this->session = $session;
+    }
+
+    public function getSession(): SessionInterface
+    {
+        return $this->session;
     }
 
     public static function createFromGlobals(): static

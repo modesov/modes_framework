@@ -6,6 +6,7 @@ use League\Container\Exception\NotFoundException;
 use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
 use Modes\Framework\Http\Exceptions\NotFoundRouteException;
+use Modes\Framework\Http\Middlewares\RequestHandlerInterface;
 use Modes\Framework\Http\Responses\NotAllowedMethodResponse;
 use Modes\Framework\Http\Responses\NotFountResponse;
 use Modes\Framework\Routing\RouterInterface;
@@ -18,7 +19,8 @@ class  Kernel
 
     public function __construct(
         private RouterInterface $router,
-        private ContainerInterface $container
+        private ContainerInterface $container,
+        private RequestHandlerInterface $requestHandler,
     )
     {
         try {
@@ -32,19 +34,23 @@ class  Kernel
     public function handle(Request $request): Response
     {
         try {
-            [$handler, $vars] = $this->router->dispatch($request, $this->container);
-            return call_user_func_array($handler, $vars);
+            return $this->requestHandler->handle($request);
         } catch (\Exception $exception) {
             return $this->createExceptionResponse($exception);
         }
     }
 
+    public function terminate(Request $request, Response $response): void
+    {
+        $request->getSession()?->clearFlash();
+    }
+
     private function createExceptionResponse(\Exception $exception): Response
     {
-//        if (in_array($this->appEnv, ['local', 'tests'])) {
-//            // TODO
-//            throw $exception;
-//        }
+        if (in_array($this->appEnv, ['local', 'tests'])) {
+            // TODO
+            throw $exception;
+        }
 
         if (
             $exception instanceof NotFoundRouteException

@@ -5,5 +5,8 @@
 {% endblock %}
 
 {% block main %}
+    {% for message in session().getFlash('success') %}
+        <div>{{ message }}</div>
+    {% endfor %}
     <h1> {{ user.name }}</h1>
 {% endblock %}
