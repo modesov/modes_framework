@@ -13,7 +13,26 @@
 </head>
 <body>
 <header>
-    Шапка
+    {% if not auth().checkAuth %}
+        <div>
+            {% if session().hasFlash('error_login') %}
+                <ul>
+                    {% for error in session().getFlash('error_login') %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+        <form method="post" action="/login">
+            <input type="text" name="email" placeholder="Email">
+            <input type="password" name="password" placeholder="Пароль">
+            <button>Войти</button>
+        </form>
+    {% else %}
+        <form method="post" action="/logout">
+            <button>Выйти</button>
+        </form>
+    {% endif %}
 </header>
 <main>
     {% block main %} {% endblock %}

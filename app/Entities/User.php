@@ -2,7 +2,9 @@
 
 namespace App\Entities;
 
-class User
+use Modes\Framework\Authentication\AuthUserInterface;
+
+class User implements AuthUserInterface
 {
     private function __construct(
         private ?int $id,
@@ -18,8 +20,8 @@ class User
         string $name,
         string $email,
         string $password,
-        ?int $id = null,
-        ?\DateTimeImmutable $createdAt = null
+        ?\DateTimeImmutable $createdAt = null,
+        ?int $id = null
     ): static
     {
         return new static($id, $name, $email, $password, $createdAt ?? new \DateTimeImmutable());

@@ -1,16 +1,24 @@
 <?php
 
+use App\Services\UserService;
 use Doctrine\DBAL\Connection;
 use League\Container\Argument\Literal\ArrayArgument;
 use League\Container\Argument\Literal\StringArgument;
 use League\Container\Container;
 use League\Container\ReflectionContainer;
+use Modes\Framework\Authentication\SessionAuthentication;
+use Modes\Framework\Authentication\SessionAuthInterface;
+use Modes\Framework\Authentication\UserServiceInterface;
 use Modes\Framework\Console\Application;
 use Modes\Framework\Console\Commands\MigrationCommand;
 use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Dbal\ConnectionFactory;
 use Modes\Framework\Http\Kernel;
 use Modes\Framework\Console\Kernel as ConsoleKernel;
+<<<<<<< HEAD
+=======
+use Modes\Framework\Http\Middlewares\ExtractRouteInfo;
+>>>>>>> 7e1ed4d (implement registration authentication)
 use Modes\Framework\Http\Middlewares\RequestHandler;
 use Modes\Framework\Http\Middlewares\RequestHandlerInterface;
 use Modes\Framework\Http\Middlewares\RouterDispatch;
@@ -52,21 +60,30 @@ $container->addShared(id: Connection::class, concrete: function () use ($contain
 
 if ($sapi !== 'cli') {
     // Web
-    $routes = include BASE_PATH . '/routes/web.php';
     $container->add(id: RouterInterface::class, concrete: Router::class);
-    $container->extend(id: RouterInterface::class)
-        ->addMethodCall(method: 'registerRoutes', args: [new ArrayArgument($routes)]);
 
     $container->add(id: RequestHandlerInterface::class, concrete: RequestHandler::class)
         ->addArgument($container);
 
+<<<<<<< HEAD
     $container->add(id: Kernel::class)->addArguments(args: [RouterInterface::class, $container, RequestHandlerInterface::class]);
+=======
+    $container->add(id: Kernel::class)->addArguments(args: [$container, RequestHandlerInterface::class]);
+>>>>>>> 7e1ed4d (implement registration authentication)
 
     $container->addShared(SessionInterface::class, Session::class);
 
     $viewsPath = BASE_PATH . '/views';
     $container->add('twig-factory', TwigFactory::class)
+<<<<<<< HEAD
         ->addArguments([new StringArgument($viewsPath), SessionInterface::class]);
+=======
+        ->addArguments([
+            new StringArgument($viewsPath),
+            SessionInterface::class,
+            SessionAuthInterface::class
+        ]);
+>>>>>>> 7e1ed4d (implement registration authentication)
 
     $container->addShared('twig', function () use ($container) {
         return $container->get(id: 'twig-factory')->create();
@@ -80,6 +97,19 @@ if ($sapi !== 'cli') {
             RouterInterface::class,
             $container
         ]);
+<<<<<<< HEAD
+=======
+
+    $container->add(id: UserServiceInterface::class, concrete: UserService::class)
+        ->addArgument(arg: Connection::class);
+
+    $container->add(id: SessionAuthInterface::class, concrete: SessionAuthentication::class)
+        ->addArguments(args: [UserServiceInterface::class, SessionInterface::class]);
+
+    $routes = include BASE_PATH . '/routes/web.php';
+    $container->add(id: ExtractRouteInfo::class)
+        ->addArgument(arg: new ArrayArgument($routes));
+>>>>>>> 7e1ed4d (implement registration authentication)
 } else {
     // Console
     $container->add(id: 'framework-command-namespace', concrete: new StringArgument('Modes\\Framework\\Console\\Commands\\'));

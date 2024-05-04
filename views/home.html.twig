@@ -8,13 +8,24 @@ Modes framework
     <h1>Описание Modes framework</h1>
     {{ user.name }}
     <p>Про УТП фреймворка</p>
-
-    <form method="post" action="/users">
-        <input type="text" name="name" placeholder="Имя">
-        <input type="email" name="email" placeholder="email">
-        <input type="password" name="password" placeholder="Пароль">
-        <button>Зарегистрироваться</button>
-    </form>
+    <div>
+        {% if session().hasFlash('error') %}
+            <ul>
+                {% for error in session().getFlash('error') %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+    {% if not auth().checkAuth() %}
+        <form method="post" action="/users">
+            <input type="text" name="name" placeholder="Имя">
+            <input type="text" name="email" placeholder="email">
+            <input type="password" name="password" placeholder="Пароль">
+            <input type="password" name="password_confirmation" placeholder="Подтверждение пороля">
+            <button>Зарегистрироваться</button>
+        </form>
+    {% endif %}
     <br>
     <a href="{{ url }}" target="_blank">Телеграм бот помощник в освоении Фреймворка</a>
 {% endblock %}

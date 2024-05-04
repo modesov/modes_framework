@@ -18,7 +18,10 @@ class  Kernel
     private string $appEnv;
 
     public function __construct(
+<<<<<<< HEAD
         private RouterInterface $router,
+=======
+>>>>>>> 7e1ed4d (implement registration authentication)
         private ContainerInterface $container,
         private RequestHandlerInterface $requestHandler,
     )
