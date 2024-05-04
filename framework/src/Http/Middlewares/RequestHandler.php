@@ -11,11 +11,7 @@ class RequestHandler implements RequestHandlerInterface
 {
     private array $middlewares = [
         StartSession::class,
-<<<<<<< HEAD
-        Authenticate::class,
-=======
         ExtractRouteInfo::class,
->>>>>>> 7e1ed4d (implement registration authentication)
     ];
 
     public function __construct(
@@ -24,15 +20,10 @@ class RequestHandler implements RequestHandlerInterface
     {
     }
 
-<<<<<<< HEAD
-=======
     public function injectionMiddlewares(array $middlewares): void
     {
         $this->middlewares = array_merge($middlewares, $this->middlewares);
     }
-
-
->>>>>>> 7e1ed4d (implement registration authentication)
     public function handle(Request $request): Response
     {
         if (empty($this->middlewares)) {

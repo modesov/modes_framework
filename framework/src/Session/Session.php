@@ -5,12 +5,8 @@ namespace Modes\Framework\Session;
 class Session implements SessionInterface
 {
     private const FLASH_KEY = 'flash';
-
-<<<<<<< HEAD
-=======
     public const AUTH_KEY = 'user_id';
 
->>>>>>> 7e1ed4d (implement registration authentication)
     public function start(): void
     {
         session_start();

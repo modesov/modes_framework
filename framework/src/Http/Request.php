@@ -8,15 +8,11 @@ class Request
 {
     private SessionInterface $session;
 
-<<<<<<< HEAD
-=======
     private mixed $routeHandler;
-
     private array $routeArgs;
 
->>>>>>> 7e1ed4d (implement registration authentication)
     public function __construct(
-        private readonly array $qetParams,
+        private readonly array $params,
         private readonly array $postData,
         private readonly array $cookies,
         private readonly array $files,
@@ -25,13 +21,26 @@ class Request
     {
     }
 
+    public function getParams(): array
+    {
+        return $this->params;
+    }
+
+    public function getCookies(): array
+    {
+        return $this->cookies;
+    }
+
+    public function getFiles(): array
+    {
+        return $this->files;
+    }
+
     public function setSession(SessionInterface $session)
     {
         $this->session = $session;
     }
 
-<<<<<<< HEAD
-=======
     public function getRouteHandler(): mixed
     {
         return $this->routeHandler;
@@ -52,7 +61,6 @@ class Request
         $this->routeArgs = $routeArgs;
     }
 
->>>>>>> 7e1ed4d (implement registration authentication)
     public function getSession(): SessionInterface
     {
         return $this->session;

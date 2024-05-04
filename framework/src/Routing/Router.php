@@ -2,13 +2,13 @@
 
 namespace Modes\Framework\Routing;
 
-use League\Container\Container;
 use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Http\Request;
+use Psr\Container\ContainerInterface;
 
 class Router implements RouterInterface
 {
-    public function dispatch(Request $request, Container $container): array
+    public function dispatch(Request $request, ContainerInterface $container): array
     {
         $handler = $request->getRouteHandler();
         $vars = $request->getRouteArgs();

@@ -7,9 +7,6 @@ use Modes\Framework\Http\Response;
 
 interface RequestHandlerInterface
 {
-<<<<<<< HEAD
-=======
     public function injectionMiddlewares(array $middlewares): void;
->>>>>>> 7e1ed4d (implement registration authentication)
     public function handle(Request $request): Response;
 }

@@ -15,10 +15,7 @@ use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Dbal\ConnectionFactory;
 use Modes\Framework\Http\Kernel;
 use Modes\Framework\Console\Kernel as ConsoleKernel;
-<<<<<<< HEAD
-=======
 use Modes\Framework\Http\Middlewares\ExtractRouteInfo;
->>>>>>> 7e1ed4d (implement registration authentication)
 use Modes\Framework\Http\Middlewares\RequestHandler;
 use Modes\Framework\Http\Middlewares\RequestHandlerInterface;
 use Modes\Framework\Http\Middlewares\RouterDispatch;
@@ -27,10 +24,7 @@ use Modes\Framework\Routing\RouterInterface;
 use Modes\Framework\Session\Session;
 use Modes\Framework\Session\SessionInterface;
 use Modes\Framework\Template\TwigFactory;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Dotenv\Dotenv;
-use Twig\Environment;
-use Twig\Loader\FilesystemLoader;
 
 $dotenv = new Dotenv();
 $dotenv->load(BASE_PATH . '/.env');
@@ -51,9 +45,10 @@ $databaseConfiguration = [
 // Application services
 $container = new Container();
 $container->delegate(new ReflectionContainer(cacheResolutions: true));
-$container->add(id: 'APP_ENV', concrete: new StringArgument($appEnv));
-$container->add(id: ConnectionFactory::class)->addArgument(new ArrayArgument($databaseConfiguration));
 
+$container->add(id: 'APP_ENV', concrete: new StringArgument($appEnv));
+
+$container->add(id: ConnectionFactory::class)->addArgument(new ArrayArgument($databaseConfiguration));
 $container->addShared(id: Connection::class, concrete: function () use ($container): Connection {
     return $container->get(ConnectionFactory::class)->create();
 });
@@ -65,25 +60,17 @@ if ($sapi !== 'cli') {
     $container->add(id: RequestHandlerInterface::class, concrete: RequestHandler::class)
         ->addArgument($container);
 
-<<<<<<< HEAD
-    $container->add(id: Kernel::class)->addArguments(args: [RouterInterface::class, $container, RequestHandlerInterface::class]);
-=======
     $container->add(id: Kernel::class)->addArguments(args: [$container, RequestHandlerInterface::class]);
->>>>>>> 7e1ed4d (implement registration authentication)
 
     $container->addShared(SessionInterface::class, Session::class);
 
     $viewsPath = BASE_PATH . '/views';
     $container->add('twig-factory', TwigFactory::class)
-<<<<<<< HEAD
-        ->addArguments([new StringArgument($viewsPath), SessionInterface::class]);
-=======
         ->addArguments([
             new StringArgument($viewsPath),
             SessionInterface::class,
             SessionAuthInterface::class
         ]);
->>>>>>> 7e1ed4d (implement registration authentication)
 
     $container->addShared('twig', function () use ($container) {
         return $container->get(id: 'twig-factory')->create();
@@ -97,8 +84,6 @@ if ($sapi !== 'cli') {
             RouterInterface::class,
             $container
         ]);
-<<<<<<< HEAD
-=======
 
     $container->add(id: UserServiceInterface::class, concrete: UserService::class)
         ->addArgument(arg: Connection::class);
@@ -109,7 +94,6 @@ if ($sapi !== 'cli') {
     $routes = include BASE_PATH . '/routes/web.php';
     $container->add(id: ExtractRouteInfo::class)
         ->addArgument(arg: new ArrayArgument($routes));
->>>>>>> 7e1ed4d (implement registration authentication)
 } else {
     // Console
     $container->add(id: 'framework-command-namespace', concrete: new StringArgument('Modes\\Framework\\Console\\Commands\\'));

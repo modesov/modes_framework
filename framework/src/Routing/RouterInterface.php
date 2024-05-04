@@ -2,10 +2,10 @@
 
 namespace Modes\Framework\Routing;
 
-use League\Container\Container;
 use Modes\Framework\Http\Request;
+use Psr\Container\ContainerInterface;
 
 interface  RouterInterface
 {
-    public function dispatch(Request $request, Container $container): array;
+    public function dispatch(Request $request, ContainerInterface $container): array;
 }

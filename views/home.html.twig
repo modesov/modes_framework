@@ -8,16 +8,16 @@ Modes framework
     <h1>Описание Modes framework</h1>
     {{ user.name }}
     <p>Про УТП фреймворка</p>
-    <div>
-        {% if session().hasFlash('error') %}
-            <ul>
-                {% for error in session().getFlash('error') %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </div>
     {% if not auth().checkAuth() %}
+        <div>
+            {% if session().hasFlash('error') %}
+                <ul>
+                    {% for error in session().getFlash('error') %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
         <form method="post" action="/users">
             <input type="text" name="name" placeholder="Имя">
             <input type="text" name="email" placeholder="email">
