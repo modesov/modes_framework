@@ -6,19 +6,20 @@ use App\Entities\User;
 use Doctrine\DBAL\Connection;
 use Modes\Framework\Authentication\AuthUserInterface;
 use Modes\Framework\Authentication\UserServiceInterface;
+use Modes\Framework\Dbal\EntityService;
 use Modes\Framework\Http\Exceptions\NotFoundException;
 
 class UserService implements UserServiceInterface
 {
     public function __construct(
-        private Connection $connection
+        private EntityService $service
     )
     {
     }
 
     public function store(User $user): User
     {
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = $this->service->getConnection()->createQueryBuilder();
 
         $queryBuilder
             ->insert('users')
@@ -35,16 +36,14 @@ class UserService implements UserServiceInterface
                 'createdAt' => $user->getCreatedAt()->format('Y-m-d H:i:s'),
             ])->executeQuery();
 
-        $id = $this->connection->lastInsertId();
-
-        $user->setId($id);
+        $this->service->save($user);
 
         return $user;
     }
 
     public function find(int $id): ?User
     {
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = $this->service->getConnection()->createQueryBuilder();
         $result = $queryBuilder
             ->select('*')
             ->from('users')
@@ -80,7 +79,7 @@ class UserService implements UserServiceInterface
 
     public function getUserByEmail($email): ?AuthUserInterface
     {
-        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder = $this->service->getConnection()->createQueryBuilder();
 
         $result = $queryBuilder
             ->select('*')

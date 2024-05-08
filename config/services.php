@@ -13,6 +13,9 @@ use Modes\Framework\Console\Application;
 use Modes\Framework\Console\Commands\MigrationCommand;
 use Modes\Framework\Controller\AbstractController;
 use Modes\Framework\Dbal\ConnectionFactory;
+use Modes\Framework\Dbal\EntityService;
+use Modes\Framework\Event\EventDispatcher;
+use Modes\Framework\Event\ListenerProvider;
 use Modes\Framework\Http\Kernel;
 use Modes\Framework\Console\Kernel as ConsoleKernel;
 use Modes\Framework\Http\Middlewares\ExtractRouteInfo;
@@ -24,10 +27,14 @@ use Modes\Framework\Routing\RouterInterface;
 use Modes\Framework\Session\Session;
 use Modes\Framework\Session\SessionInterface;
 use Modes\Framework\Template\TwigFactory;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\ListenerProviderInterface;
 use Symfony\Component\Dotenv\Dotenv;
 
+
+$basePath = dirname(__DIR__);
 $dotenv = new Dotenv();
-$dotenv->load(BASE_PATH . '/.env');
+$dotenv->load($basePath . '/.env');
 $sapi = php_sapi_name();
 
 // Application parameters
@@ -45,6 +52,7 @@ $databaseConfiguration = [
 // Application services
 $container = new Container();
 $container->delegate(new ReflectionContainer(cacheResolutions: true));
+$container->add('base-path', $basePath);
 
 $container->add(id: 'APP_ENV', concrete: new StringArgument($appEnv));
 
@@ -60,11 +68,21 @@ if ($sapi !== 'cli') {
     $container->add(id: RequestHandlerInterface::class, concrete: RequestHandler::class)
         ->addArgument($container);
 
-    $container->add(id: Kernel::class)->addArguments(args: [$container, RequestHandlerInterface::class]);
+    $container->addShared(id: ListenerProviderInterface::class, concrete: ListenerProvider::class);
+
+    $container->addShared(id: EventDispatcherInterface::class, concrete: EventDispatcher::class)
+        ->addArgument(arg: ListenerProviderInterface::class);
+
+    $container->add(id: Kernel::class)
+        ->addArguments(args: [
+            $container,
+            RequestHandlerInterface::class,
+            EventDispatcherInterface::class,
+        ]);
 
     $container->addShared(SessionInterface::class, Session::class);
 
-    $viewsPath = BASE_PATH . '/views';
+    $viewsPath = $basePath . '/views';
     $container->add('twig-factory', TwigFactory::class)
         ->addArguments([
             new StringArgument($viewsPath),
@@ -86,12 +104,12 @@ if ($sapi !== 'cli') {
         ]);
 
     $container->add(id: UserServiceInterface::class, concrete: UserService::class)
-        ->addArgument(arg: Connection::class);
+        ->addArgument(arg: EntityService::class);
 
     $container->add(id: SessionAuthInterface::class, concrete: SessionAuthentication::class)
         ->addArguments(args: [UserServiceInterface::class, SessionInterface::class]);
 
-    $routes = include BASE_PATH . '/routes/web.php';
+    $routes = include $basePath . '/routes/web.php';
     $container->add(id: ExtractRouteInfo::class)
         ->addArgument(arg: new ArrayArgument($routes));
 } else {
@@ -104,7 +122,7 @@ if ($sapi !== 'cli') {
 
     $container->add(id: 'mc:migrate', concrete: MigrationCommand::class)
         ->addArgument(arg: Connection::class)
-        ->addArgument(arg: new StringArgument(BASE_PATH . '/database/migrations'));
+        ->addArgument(arg: new StringArgument($basePath . '/database/migrations'));
 }
 
 return $container;

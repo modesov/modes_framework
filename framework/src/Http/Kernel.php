@@ -4,14 +4,15 @@ namespace Modes\Framework\Http;
 
 use League\Container\Exception\NotFoundException;
 use Modes\Framework\Controller\AbstractController;
+use Modes\Framework\Http\Events\ResponseEvent;
 use Modes\Framework\Http\Exceptions\MethodNotAllowedException;
 use Modes\Framework\Http\Exceptions\NotFoundRouteException;
 use Modes\Framework\Http\Middlewares\RequestHandlerInterface;
 use Modes\Framework\Http\Responses\NotAllowedMethodResponse;
 use Modes\Framework\Http\Responses\NotFountResponse;
-use Modes\Framework\Routing\RouterInterface;
 use Psr\Container\ContainerInterface;
 use Modes\Framework\Http\Exceptions\NotFoundException as NotFound404Exception;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 class  Kernel
 {
@@ -20,6 +21,7 @@ class  Kernel
     public function __construct(
         private ContainerInterface $container,
         private RequestHandlerInterface $requestHandler,
+        private EventDispatcherInterface $eventDispatcher,
     )
     {
         try {
@@ -33,10 +35,14 @@ class  Kernel
     public function handle(Request $request): Response
     {
         try {
-            return $this->requestHandler->handle($request);
+            $response = $this->requestHandler->handle($request);
         } catch (\Exception $exception) {
-            return $this->createExceptionResponse($exception);
+            $response = $this->createExceptionResponse($exception);
         }
+
+        $this->eventDispatcher->dispatch(new ResponseEvent($request, $response));
+
+        return $response;
     }
 
     public function terminate(Request $request, Response $response): void

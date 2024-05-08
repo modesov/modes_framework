@@ -8,6 +8,14 @@ use Modes\Framework\Http\Request;
 /** @var League\Container\Container $container */
 $container = require BASE_PATH . '/config/services.php';
 
+/** @var Modes\Framework\Event\ListenerProvider $listenerProvider */
+$listenerProvider = $container->get(\Psr\EventDispatcher\ListenerProviderInterface::class);
+
+$listenerProvider
+    ->addListener(\Modes\Framework\Dbal\Events\EntityPersist::class, new \App\Listeners\SaveEntityListener())
+    ->addListener(\Modes\Framework\Http\Events\ResponseEvent::class, new \App\Listeners\ErrorListener())
+    ->addListener(\Modes\Framework\Http\Events\ResponseEvent::class, new \App\Listeners\ContentLengthListener());
+
 $request = Request::createFromGlobals();
 
 $kernel = $container->get(Kernel::class);
