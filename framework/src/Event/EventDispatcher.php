@@ -3,12 +3,11 @@
 namespace Modes\Framework\Event;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
 
 readonly class EventDispatcher implements EventDispatcherInterface
 {
-    public function __construct(private ListenerProviderInterface $provider)
+    public function __construct(private ListenerProvider $provider)
     {
     }
 

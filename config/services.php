@@ -28,7 +28,6 @@ use Modes\Framework\Session\Session;
 use Modes\Framework\Session\SessionInterface;
 use Modes\Framework\Template\TwigFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\EventDispatcher\ListenerProviderInterface;
 use Symfony\Component\Dotenv\Dotenv;
 
 
@@ -68,10 +67,10 @@ if ($sapi !== 'cli') {
     $container->add(id: RequestHandlerInterface::class, concrete: RequestHandler::class)
         ->addArgument($container);
 
-    $container->addShared(id: ListenerProviderInterface::class, concrete: ListenerProvider::class);
+    $container->addShared(id: ListenerProvider::class);
 
     $container->addShared(id: EventDispatcherInterface::class, concrete: EventDispatcher::class)
-        ->addArgument(arg: ListenerProviderInterface::class);
+        ->addArgument(arg: ListenerProvider::class);
 
     $container->add(id: Kernel::class)
         ->addArguments(args: [

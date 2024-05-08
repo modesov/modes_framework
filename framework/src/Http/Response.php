@@ -14,6 +14,10 @@ class Response
     }
     public function send(): void
     {
+        foreach ($this->headers as $key => $value) {
+            header("$key: $value");
+        }
+
         echo $this->content;
     }
 
